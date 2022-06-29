@@ -31,7 +31,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/Instance"
+                  "$ref" : "#/components/schemas/InstanceCreationResponse"
                 }
               }
             }
@@ -44,12 +44,50 @@
           }
         }
       }
+    },
+    "/instances/{instanceId}" : {
+      "get" : {
+        "summary" : "Obtains the status of a given instance ID, if it exists.",
+        "description" : "TODO",
+        "operationId" : "statusInstance",
+        "parameters" : [ {
+          "name" : "instanceId",
+          "in" : "path",
+          "description" : "Instance ID to fetch status from.",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string",
+            "format" : "sha1",
+            "example" : "09120402431e49c8ffdbbdb90e044431e2300de4"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Instance status description.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/InstanceStatusResponse"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized."
+          },
+          "404" : {
+            "description" : "Instance not found."
+          }
+        }
+      }
     }
   },
   "components" : {
     "schemas" : {
-      "Instance" : {
-        "required" : [ "id" ],
+      "InstanceCreationResponse" : {
+        "required" : [ "id", "status" ],
         "type" : "object",
         "properties" : {
           "id" : {
@@ -57,15 +95,30 @@
             "format" : "sha1",
             "example" : "09120402431e49c8ffdbbdb90e044431e2300de4"
           },
+          "status" : {
+            "type" : "string",
+            "example" : "starting",
+            "enum" : [ "starting", "failed" ]
+          }
+        }
+      },
+      "InstanceStatusResponse" : {
+        "required" : [ "id", "status" ],
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "string",
+            "format" : "sha1",
+            "example" : "09120402431e49c8ffdbbdb90e044431e2300de4"
+          },
+          "status" : {
+            "type" : "string",
+            "example" : "[\"starting\",\"failed\",\"running\",\"destroying\",\"destroyed\"]"
+          },
           "url" : {
             "type" : "string",
             "format" : "uri",
             "example" : "https://09120402431e49c8ffdbbdb90e044431e2300de4.efimeral.com:5566"
-          },
-          "createdAt" : {
-            "type" : "string",
-            "format" : "date-time",
-            "example" : "2016-08-29T09:12:33.001Z"
           }
         }
       }
